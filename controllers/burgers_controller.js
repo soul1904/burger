@@ -1,42 +1,61 @@
-var express = require('express');
+var express = require("express");
+
 var router = express.Router();
-var burger = require('../models/burger.js');
 
-//get route -> index
-router.get('/', function(req, res) {
-    res.redirect('/burgers');
+// Import the model (cat.js) to use its database functions.
+var burgers = require("../models/burgers.js");
+
+// Create all our routes and set up logic within those routes where required.
+router.get("/", function(req, res) {
+  burgers.all(function(data) {
+    var hbsObject = {
+      burgers: data
+    };
+    console.log(hbsObject);
+    res.render("index", hbsObject);
+  });
 });
 
-router.get('/burgers', function(req, res) {
-    //express callback response by calling burger.selectAllBurger
-    burger.all(function(data) {
-        //wrapper for orm.js that using MySQL query callback will return data, render to index with handlebar
-        res.render('index', { data });
-    });
+router.post("/api/burgers", function(req, res) {
+  burgers.create([
+    "burger_name", "devoured"
+  ], [
+    req.body.burger_name, req.body.devoured
+  ], function(result) {
+    // Send back the ID of the new quote
+    res.json({ id: result.insertId });
+  });
 });
 
-//post route -> back to index
-router.post('/burgers/create', function(req, res) {
-    if (req.body.burger_name == '') {
-        console.log('No burger name entered');
-        res.redirect('/');
+router.put("/api/burgers/:id", function(req, res) {
+  var condition = "id = " + req.params.id;
+
+  console.log("condition", condition);
+
+  burgers.update({
+    name: req.body.burger_name
+  }, condition, function(result) {
+    if (result.changedRows == 0) {
+      // If no rows were changed, then the ID must not exist, so 404
+      return res.status(404).end();
     } else {
-        //takes the request object using it as input for buger.addBurger
-        burger.create(req.body.burger_name, function(result) {
-            //wrapper for orm.js that using MySQL insert callback will return a log to console, render back to index with handle
-            console.log(result);
-            res.redirect('/');
-        });
+      res.status(200).end();
     }
+  });
 });
 
-//put route -> back to index
-router.put('/burgers/update', function(req, res) {
-    burger.update(req.body.id, function(result) {
-        //wrapper for orm.js that using MySQL update callback will return a log to console, render back to index with handle
-        console.log(result);
-        res.redirect('/');
-    });
+router.delete("/api/burgers/:id", function(req, res) {
+  var condition = "id = " + req.params.id;
+
+  burgers.delete(condition, function(result) {
+    if (result.affectedRows == 0) {
+      // If no rows were changed, then the ID must not exist, so 404
+      return res.status(404).end();
+    } else {
+      res.status(200).end();
+    }
+  });
 });
 
+// Export routes for server.js to use.
 module.exports = router;
