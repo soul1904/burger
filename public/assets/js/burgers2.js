@@ -8,9 +8,8 @@ $(function() {
 			devoured: newDevour
 		};
 
-		// console.log(id);
-		// console.log(newDevour);
-		// console.log(newDevourState);
+	
+		console.log(newDevourState);
 		
 		// Send the PUT request to update databse
 		$.ajax("/api/burgers/" + id, {
@@ -47,9 +46,6 @@ $(function() {
 			}
 		);
 	});
-
-
-
 
 
 });

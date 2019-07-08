@@ -4,8 +4,8 @@
       <h3>Burgers ready to eat</h3>
       <ul>
         {{#each burgers}}
-          {{#unless this.devoured}}
-            <li class="burger-list">{{this.burger_name}}
+          {{#unless devoured}}
+            <li class="burger-list">{{burger_name}}
               <button type="button" class="btn btn-primary devour-btn" data-id="{{id}}">Devour it!</button>
             </li>
           {{/unless}}
@@ -17,8 +17,8 @@
       <h3>Burgers that have been eaten</h3>
       <ul>
         {{#each burgers}}
-          {{#if this.devoured}}
-            <li class="burger-list-eaten">{{this.burger_name}}
+          {{#if devoured}}
+            <li class="burger-list-eaten">{{burger_name}}
             </li>
           {{/if}}
         {{/each}}
